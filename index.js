@@ -62,7 +62,7 @@ app.get('/total', function(req, res, next) {
 
   
   .then(function(result){
-    res.send(result);
+    res.send(result[0]);
   })
   .catch(function (err) {
         console.log(err);
@@ -73,73 +73,32 @@ app.get('/total', function(req, res, next) {
 
 app.get('/roads', function(req, res, next) {
 
- var query = 
-' [out:json]; ' +
-'(' +
-'way["highway"="track"]["access"="forestry"]( -14.093957177836224,7.470703125,10.919617760254697,36.03515625 ); ' +
-'way["highway"="track"]["access"="agriculture"]( -14.093957177836224,7.470703125,10.919617760254697,36.03515625 ); ' +
-'way["abandoned:highway"="track"]["access"="forestry"]( -14.093957177836224,7.470703125,10.919617760254697,36.03515625 ); ' +
-'way["abandoned:highway"="track"]["access"="agricultural"]( -14.093957177836224,7.470703125,10.919617760254697,36.03515625 ); ' +
-'); ' +
-'out count; ';
-
- request.post('http://overpass-api.de/api/interpreter', function (error, response, body) {
- 
-
-        if (!error && response.statusCode === 200) {
-            res.send(body);
-        } else if (error) {
-            next(error);
-        } else if (response) {
-            next({
-                message: 'Request failed: HTTP ' + response.statusCode,
-                statusCode: response.statusCode
-            });
-        } else {
-            next({
-                message: 'Unknown error.',
-            });
-        }
-    }).form({
-        data: query
-    });
+ knex.select('value')
+  .from('logging.stats')
+  .where({key: 'totalRoads'})
+  .then(function(result){
+    res.send(result[0]);
+  })
+  .catch(function (err) {
+    console.log(err);
+    next(err);
+  });
   
 });
 
 
 app.get('/roadswithstartdate', function(req, res, next) {
 
- var query = 
-' [out:json]; ' +
-'(' +
-'way["highway"="track"]["access"="forestry"]["start_date"]( -14.093957177836224,7.470703125,10.919617760254697,36.03515625 ); ' +
-'way["highway"="track"]["access"="agriculture"]["start_date"]( -14.093957177836224,7.470703125,10.919617760254697,36.03515625 ); ' +
-'way["abandoned:highway"="track"]["access"="forestry"]["start_date"]( -14.093957177836224,7.470703125,10.919617760254697,36.03515625 ); ' +
-'way["abandoned:highway"="track"]["access"="agricultural"]["start_date"]( -14.093957177836224,7.470703125,10.919617760254697,36.03515625 ); ' +
-'); ' +
-'out count; ';
-
- request.post('http://overpass-api.de/api/interpreter', function (error, response, body) {
- 
-
-        if (!error && response.statusCode === 200) {
-            res.send(body);
-        } else if (error) {
-            next(error);
-        } else if (response) {
-            next({
-                message: 'Request failed: HTTP ' + response.statusCode,
-                statusCode: response.statusCode
-            });
-        } else {
-            next({
-                message: 'Unknown error.',
-            });
-        }
-    }).form({
-        data: query
-    });
-  
+ knex.select('value')
+  .from('logging.stats')
+  .where({key: 'taggedRoads'})
+  .then(function(result){    
+    res.send(result[0]);
+  })
+  .catch(function (err) {
+    console.log(err);
+    next(err);
+  });
 });
 
 
